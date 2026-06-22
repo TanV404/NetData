@@ -105,6 +105,6 @@ pip install -r requirements.txt
 ### 4️⃣ Start the Netflix Dashboard locally:
 
 ```bash
-streamlit run netflix_dashboard.py
+streamlit run app.py
 ```
 
