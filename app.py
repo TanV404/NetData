@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from src.sentiment_analysis import add_sentiment, HAS_TRANSFORMER
-from src.recommender import build_recommender, get_hybrid_similarity, recommend, evaluate_recommender
+from src.recommender import build_recommender, recommend, evaluate_recommender
 
 # --- Streamlit Page Config ---
 st.set_page_config(
@@ -32,7 +32,7 @@ def load_recommender_matrices(df):
     return build_recommender(df)
 
 df = load_data()
-df_clean, sim_desc, sim_genre, sim_rating, indices = load_recommender_matrices(df)
+df_clean, tfidf_matrix, genre_matrix, rating_features, indices = load_recommender_matrices(df)
 
 # --- Tabs Layout ---
 tab1, tab2, tab3, tab4 = st.tabs(["📊 Overview", "💬 Sentiment Analysis", "🎯 Recommendations", "📈 Trend Analysis"])
@@ -174,14 +174,11 @@ with tab3:
     with col_w3:
         w_rating = st.slider("Rating Compatibility", 0.0, 1.0, 0.2, 0.1, help="Weight for content rating and maturity level matching.")
 
-    # Compute hybrid similarity
-    cosine_sim = get_hybrid_similarity(sim_desc, sim_genre, sim_rating, w_desc, w_genre, w_rating)
-
     # 2. Recommendation Engine Interface
     st.markdown("### 🔍 Search Recommendations")
     user_input = st.text_input("Enter a title to get similar recommendations:")
     if user_input:
-        recs = recommend(user_input, df_clean, cosine_sim, indices)
+        recs = recommend(user_input, df_clean, tfidf_matrix, genre_matrix, rating_features, indices, w_desc, w_genre, w_rating)
         if recs:
             st.success(f"Top {len(recs)} recommendations for **{user_input.title()}**:")
             for r in recs:
@@ -200,12 +197,12 @@ with tab3:
     st.subheader("📊 Recommender Offline Evaluation")
     st.caption("These metrics evaluate the current hybrid configuration across a random sample of 200 items.")
 
-    # Cache evaluation results based on the similarity matrix to avoid slow re-renders
+    # Cache evaluation results based on weights to avoid slow re-renders
     @st.cache_data(ttl=600)
-    def get_evaluation_results(df_clean, sim_matrix):
-        return evaluate_recommender(df_clean, sim_matrix, k=5, sample_size=200)
+    def get_evaluation_results(df_clean, tfidf_matrix, genre_matrix, rating_features, w_desc, w_genre, w_rating):
+        return evaluate_recommender(df_clean, tfidf_matrix, genre_matrix, rating_features, w_desc, w_genre, w_rating, k=5, sample_size=200)
 
-    eval_results = get_evaluation_results(df_clean, cosine_sim)
+    eval_results = get_evaluation_results(df_clean, tfidf_matrix, genre_matrix, rating_features, w_desc, w_genre, w_rating)
 
     col_e1, col_e2, col_e3 = st.columns(3)
     with col_e1:
