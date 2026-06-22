@@ -5,5 +5,3 @@ matplotlib
 textblob
 scikit-learn
 nltk
-transformers
-torch

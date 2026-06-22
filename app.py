@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from src.sentiment_analysis import add_sentiment
+from src.sentiment_analysis import add_sentiment, HAS_TRANSFORMER
 from src.recommender import build_recommender, get_hybrid_similarity, recommend, evaluate_recommender
 
 # --- Streamlit Page Config ---
@@ -136,7 +136,13 @@ with tab2:
     with col_input:
         user_input = st.text_input("Enter a movie/show description to analyze sentiment:")
     with col_model:
-        model_choice = st.selectbox("Select Model", options=["VADER (Fast, Lexicon)", "DistilBERT (Transformer, High Accuracy)"])
+        if HAS_TRANSFORMER:
+            model_options = ["VADER (Fast, Lexicon)", "DistilBERT (Transformer, High Accuracy)"]
+            help_text = "Select the sentiment model."
+        else:
+            model_options = ["VADER (Fast, Lexicon)"]
+            help_text = "DistilBERT (Transformer) is disabled to prevent cloud deployment OOM crashes. Install torch/transformers locally to enable."
+        model_choice = st.selectbox("Select Model", options=model_options, help=help_text)
 
     if user_input.strip():
         if model_choice.startswith("VADER"):
@@ -144,7 +150,7 @@ with tab2:
             sentiment, score = analyze_sentiment_vader(user_input)
             st.success(f"**Predicted Sentiment:** {sentiment}")
             st.markdown(fr"**VADER Compound Score:** `{score:.4f}` (Positive $\ge 0.05$, Negative $\le -0.05$, Neutral between)")
-        else:
+        elif HAS_TRANSFORMER and model_choice.startswith("DistilBERT"):
             from src.sentiment_analysis import analyze_sentiment_transformer
             with st.spinner("Analyzing with DistilBERT... (loading weights on first run)"):
                 sentiment, score = analyze_sentiment_transformer(user_input)

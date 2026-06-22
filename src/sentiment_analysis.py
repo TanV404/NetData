@@ -20,6 +20,14 @@ def add_sentiment(df):
     )
     return df
 
+# Check if transformers and torch are available
+try:
+    import torch
+    from transformers import pipeline
+    HAS_TRANSFORMER = True
+except ImportError:
+    HAS_TRANSFORMER = False
+
 # Global placeholder for lazy-loaded transformer pipeline
 _transformer_pipeline = None
 
@@ -30,8 +38,8 @@ def get_transformer_pipeline():
     """
     global _transformer_pipeline
     if _transformer_pipeline is None:
-        from transformers import pipeline
-        # Use default sentiment analysis pipeline, which uses DistilBERT base uncased finetuned sst-2
+        if not HAS_TRANSFORMER:
+            raise ImportError("transformers/torch is not installed in the environment.")
         _transformer_pipeline = pipeline("sentiment-analysis", model="distilbert/distilbert-base-uncased-finetuned-sst-2-english")
     return _transformer_pipeline
 
