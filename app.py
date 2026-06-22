@@ -199,8 +199,8 @@ with tab3:
 
     # Cache evaluation results based on weights to avoid slow re-renders
     @st.cache_data(ttl=600)
-    def get_evaluation_results(df_clean, tfidf_matrix, genre_matrix, rating_features, w_desc, w_genre, w_rating):
-        return evaluate_recommender(df_clean, tfidf_matrix, genre_matrix, rating_features, w_desc, w_genre, w_rating, k=5, sample_size=200)
+    def get_evaluation_results(_df_clean, _tfidf_matrix, _genre_matrix, _rating_features, w_desc, w_genre, w_rating):
+        return evaluate_recommender(_df_clean, _tfidf_matrix, _genre_matrix, _rating_features, w_desc, w_genre, w_rating, k=5, sample_size=200)
 
     eval_results = get_evaluation_results(df_clean, tfidf_matrix, genre_matrix, rating_features, w_desc, w_genre, w_rating)
 
