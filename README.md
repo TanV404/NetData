@@ -12,14 +12,19 @@ An interactive Streamlit dashboard that analyzes Netflix content data using **Da
 - Visualize content distribution using bar charts.
 
 ### 💬 2. Sentiment Analysis
-- Automatic sentiment classification of show descriptions using **TextBlob**.
-- View counts of positive and negative sentiments.
-- Try custom text input to analyze sentiment instantly.
+- Dataset-wide sentiment classification of show descriptions using **VADER** (fast, lexicon-based).
+- On-demand, high-fidelity sentiment prediction of custom user text with a toggle between **VADER** and **DistilBERT** (Hugging Face Transformer model).
+- View distribution of positive, negative, and neutral sentiments across the catalog.
 
-### 🎯 3. Recommendation Engine
-- AI-based content recommender using **TF-IDF** and **cosine similarity**.
-- Enter a show or movie title to get similar recommendations.
-- Each recommendation displays **genre** and **description**.
+### 🎯 3. Hybrid Recommendation Engine
+- Recommender combining **description semantics (TF-IDF)**, **genre overlaps (multi-label binarizer)**, and **content age rating compatibility**.
+- Interactive weights selection via Streamlit sliders to adjust feature balance.
+- **Offline Evaluation Metrics** showing **Precision @ 5**, **Catalog Coverage @ 5**, and **Recommendation Diversity @ 5** to measure model performance and diversity trade-offs.
+
+### 📈 4. Trend Analysis
+- Visualize Netflix library growth since 2008 (Movies vs. TV Shows added).
+- Track the popularity evolution of the top 5 genres over the years.
+- View geographic production distribution trends for top countries.
 
 ---
 
@@ -41,9 +46,9 @@ An interactive Streamlit dashboard that analyzes Netflix content data using **Da
 | Component | Technology |
 |------------|-------------|
 | **Frontend** | [Streamlit](https://streamlit.io) |
-| **Data Processing** | Pandas, Scikit-learn |
-| **Sentiment Analysis** | TextBlob |
-| **Machine Learning** | TF-IDF Vectorization + Cosine Similarity |
+| **Data Processing** | Pandas, Scikit-learn, Numpy |
+| **Sentiment Analysis** | VADER (NLTK Lexicon), DistilBERT (Hugging Face Transformers / PyTorch) |
+| **Machine Learning** | Hybrid Multi-Feature Cosine Similarity + Offline Evaluation Metrics |
 | **Language** | Python 3.8+ |
 
 ---
